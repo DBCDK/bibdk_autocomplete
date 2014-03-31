@@ -107,6 +107,8 @@ function bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, $
             }
           }
         }
+      } else {
+        watchdog('bibdk_autocomplete', 'Custom search elements not set. Check module weight', array(), $severity = WATCHDOG_NOTICE);
       }
       if ( !empty($form['advanced'] && !empty($form['advanced']['expand']) ) ) {
         foreach ( $form['advanced']['expand'] as $element_label => $elements ) {
