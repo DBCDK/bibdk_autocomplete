@@ -147,28 +147,28 @@ function bibdk_autocomplete_admin() {
     $form['bibdk_autocomplete_var'][ $value->p_uuid ]['vars'][ $value->v_uuid ]['autocomplete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Autocomplete'),
-      '#default_value' => $default_value['autocomplete'],
+      '#default_value' => ( !empty($default_value['autocomplete']) ) ? $default_value['autocomplete'] : FALSE,
     );
 
     $form['bibdk_autocomplete_var'][ $value->p_uuid ]['vars'][ $value->v_uuid ]['index'] = array(
       '#type' => 'textfield',
       '#title' => t('Term index'),
       '#size' => 25,
-      '#default_value' => $default_value['index'],
+      '#default_value' => ( !empty($default_value['index']) ) ? $default_value['index'] : '',
     );
 
     $form['bibdk_autocomplete_var'][ $value->p_uuid ]['vars'][ $value->v_uuid ]['facetIndex'] = array(
       '#type' => 'textfield',
       '#title' => t('Facet Index'),
       '#size' => 25,
-      '#default_value' => $default_value['facetIndex'],
+      '#default_value' => ( !empty($default_value['facetIndex']) ) ? $default_value['facetIndex'] : '',
     );
 
     $form['bibdk_autocomplete_var'][ $value->p_uuid ]['vars'][ $value->v_uuid ]['filterQuery'] = array(
       '#type' => 'textfield',
       '#title' => t('Filter Query'),
       '#size' => 25,
-      '#default_value' => $default_settings['filterQuery'],
+      '#default_value' => ( !empty($default_value['filterQuery']) ) ? $default_value['filterQuery'] : '',
     );
 
 
@@ -176,7 +176,7 @@ function bibdk_autocomplete_admin() {
       '#type' => 'radios',
       '#title' => t('Output sort order'),
       '#options' => array('count'=>'count', 'index'=>'index', ),
-      '#default_value' => $default_value['sort'],
+      '#default_value' => ( !empty($default_value['sort']) ) ? $default_value['sort'] : '',
     );
 
   }
