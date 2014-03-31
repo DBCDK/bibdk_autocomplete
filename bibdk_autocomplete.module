@@ -90,7 +90,7 @@ function bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, $
 
   if ( !empty($vars) ) {
     foreach ( $vars as $v_uuid => $values ) {
-      if ( !empty($form['advanced'] && !empty($form['advanced']['main']) ) ) {
+      if ( !empty($form['advanced']) && !empty($form['advanced']['main']) ) {
         foreach ( $form['advanced']['main'] as $element_label => $elements ) {
           if ( is_array($elements) ) {
             foreach ( $elements as $element_uuid => $element_val ) {
@@ -110,7 +110,7 @@ function bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, $
       } else {
         watchdog('bibdk_autocomplete', 'Custom search elements not set. Check module weight', array(), $severity = WATCHDOG_NOTICE);
       }
-      if ( !empty($form['advanced'] && !empty($form['advanced']['expand']) ) ) {
+      if ( !empty($form['advanced']) && !empty($form['advanced']['expand']) ) {
         foreach ( $form['advanced']['expand'] as $element_label => $elements ) {
           if ( is_array($elements) ) {
             foreach ( $elements as $element_uuid => $element_val ) {
