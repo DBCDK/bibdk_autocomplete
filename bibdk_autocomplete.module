@@ -90,33 +90,37 @@ function bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, $
 
   if ( !empty($vars) ) {
     foreach ( $vars as $v_uuid => $values ) {
-      foreach ( $form['advanced']['main'] as $element_label => $elements ) {
-        if ( is_array($elements) ) {
-          foreach ( $elements as $element_uuid => $element_val ) {
-            foreach ( $element_val as $element_key => $element_var ) {
-              if (
-                is_array($element_var) &&
-                isset($element_var['#id']) &&
-                $element_var['#id'] == $v_uuid &&
-                $values['autocomplete']
-              ) {
-                $form['advanced']['main'][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'bibdk/autocomplete/' . $p_uuid . '/' . $v_uuid;
+      if ( !empty($form['advanced'] && !empty($form['advanced']['main']) ) ) {
+        foreach ( $form['advanced']['main'] as $element_label => $elements ) {
+          if ( is_array($elements) ) {
+            foreach ( $elements as $element_uuid => $element_val ) {
+              foreach ( $element_val as $element_key => $element_var ) {
+                if (
+                  is_array($element_var) &&
+                  isset($element_var['#id']) &&
+                  $element_var['#id'] == $v_uuid &&
+                  $values['autocomplete']
+                ) {
+                  $form['advanced']['main'][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'bibdk/autocomplete/' . $p_uuid . '/' . $v_uuid;
+                }
               }
             }
           }
         }
       }
-      foreach ( $form['advanced']['expand'] as $element_label => $elements ) {
-        if ( is_array($elements) ) {
-          foreach ( $elements as $element_uuid => $element_val ) {
-            foreach ( $element_val as $element_key => $element_var ) {
-              if (
-                is_array($element_var) &&
-                isset($element_var['#id']) &&
-                $element_var['#id'] == $v_uuid &&
-                $values['autocomplete']
-              ) {
-                $form['expand']['main'][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'bibdk/autocomplete/' . $p_uuid . '/' . $v_uuid;
+      if ( !empty($form['advanced'] && !empty($form['advanced']['expand']) ) ) {
+        foreach ( $form['advanced']['expand'] as $element_label => $elements ) {
+          if ( is_array($elements) ) {
+            foreach ( $elements as $element_uuid => $element_val ) {
+              foreach ( $element_val as $element_key => $element_var ) {
+                if (
+                  is_array($element_var) &&
+                  isset($element_var['#id']) &&
+                  $element_var['#id'] == $v_uuid &&
+                  $values['autocomplete']
+                ) {
+                  $form['expand']['main'][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'bibdk/autocomplete/' . $p_uuid . '/' . $v_uuid;
+                }
               }
             }
           }

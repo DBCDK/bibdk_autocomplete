@@ -10,7 +10,7 @@
  */
 function bibdk_autocomplete_install() {
   db_update('system')
-    ->fields(array('weight' => 10))
+    ->fields(array('weight' => 15))
     ->condition('name', 'bibdk_custom_search', '=')
     ->execute();
 }
