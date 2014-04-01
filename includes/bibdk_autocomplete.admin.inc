@@ -171,7 +171,6 @@ function bibdk_autocomplete_admin() {
       '#default_value' => ( !empty($default_value['filterQuery']) ) ? $default_value['filterQuery'] : '',
     );
 
-
     $form['bibdk_autocomplete_var'][ $value->p_uuid ]['vars'][ $value->v_uuid ]['sort'] = array(
       '#type' => 'radios',
       '#title' => t('Output sort order'),
@@ -192,7 +191,20 @@ function bibdk_autocomplete_admin() {
  * Validation handler for bibdk_autocomplete_admin
  */
 function bibdk_autocomplete_admin_validate($form, &$form_state) {
+
   $form_state['values']['bibdk_autocomplete_rest_url'] = trim($form_state['values']['bibdk_autocomplete_rest_url'], $character_mask = " \t\n\r\0\x0B/");
+  
+  foreach ($form_state['values']['bibdk_autocomplete_var'] as $p_uuid => $page) {
+    foreach ($page['vars'] as $v_uuid => $vars) {
+      if ( $vars['autocomplete'] && empty($vars['index']) ) {
+        form_set_error(
+          'bibdk_autocomplete_var][' . $p_uuid . '][vars][' . $v_uuid . '][index', 
+          'If autocomplete is checked, a search index must be configured'
+        );
+      }
+    }
+  }
+
 }
 
 
