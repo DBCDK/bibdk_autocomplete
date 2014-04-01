@@ -42,9 +42,9 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string){
   $value_vars = $vars[$p_uuid]['vars'][$v_uuid];
   unset($value_vars['autocomplete']);
 
-  if ( !$value_vars['index'] ) {
-    throw new Exception( 'bibdk_autocomplete: Autocomplete index not defined for value uuid ' . $v_uuid);
-    return array();
+  if ( empty($value_vars['index']) ) {
+    watchdog('bibdk_autocomplete', 'Autocomplete index not defined for value uuid ' . $v_uuid, $severity = WATCHDOG_ERROR);
+    return drupal_json_output(array());
   }
   
   $url = ( $value_vars['facetIndex'] ) ? $url . '/facets' : $url . '/terms';
