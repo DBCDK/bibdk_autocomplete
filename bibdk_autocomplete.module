@@ -61,7 +61,7 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string){
 
   if ( $result->suggestions ) {
     foreach ( $result->suggestions as $suggestion ) {
-      $items[ strip_tags($suggestion->suggestion) ] = $suggestion->suggestion;
+      $items[ html_entity_decode(strip_tags($suggestion->suggestion)) ] = $suggestion->suggestion;
     }
   } else {
     watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . $url, array(), $severity = WATCHDOG_NOTICE);
