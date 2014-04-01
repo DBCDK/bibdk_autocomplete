@@ -35,6 +35,7 @@ function bibdk_autocomplete_menu() {
 
 function bibdk_autocomplete($p_uuid, $v_uuid, $string){
 
+  $items = array();
   $settings = variable_get('bibdk_autocomplete_settings', array());
   $url  = variable_get('bibdk_autocomplete_rest_url', NULL);
   $vars = variable_get('bibdk_autocomplete_var', array());
@@ -43,7 +44,7 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string){
   unset($value_vars['autocomplete']);
 
   if ( empty($value_vars['index']) ) {
-    watchdog('bibdk_autocomplete', 'Autocomplete index not defined for value uuid ' . $v_uuid, $severity = WATCHDOG_ERROR);
+    watchdog('bibdk_autocomplete', 'Autocomplete index not defined for value uuid ' . $v_uuid, array(), $severity = WATCHDOG_WARNING);
     return drupal_json_output(array());
   }
   
@@ -54,6 +55,8 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string){
   $options['query'] = array('query' => check_plain($string)) + $value_vars + $settings;
   
   $url = url($url,$options);
+
+  watchdog('bibdk_autocomplete', 'Autocomplete sent to: ' . $url, array(), $severity = WATCHDOG_NOTICE);
   
   $curl = new MicroCURL();
   $result = json_decode($curl->get(array($url)));
