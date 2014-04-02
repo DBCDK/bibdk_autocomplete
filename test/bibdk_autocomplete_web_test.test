@@ -20,10 +20,6 @@ class BibdkAutocompleteWebTestCase extends DrupalWebTestCase {
   public function setUp() {
     // $this->profile = 'minimal';
     parent::setUp('bibdk_autocomplete', 'bibdk_custom_search', 'uuid');
-    // variable_set('ting_search_url', 'http://lakiseks.dbc.dk/openbibdk/next/');
-    // variable_set('bibdk_provider_security_code', 'testhest');
-    // variable_set('search_active_modules', array('ting_openformat' => 'ting_openformat'));
-    // variable_set('search_default_module', 'ting_openformat');
     user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array(
       'access content',
       'search content'
@@ -192,22 +188,16 @@ class BibdkAutocompleteWebTestCase extends DrupalWebTestCase {
     $edit = array();
     $_bibdk_custom_search_page_title = $edit['bibdk_custom_search[0][page_title]'] = $this->randomName(8);
     $this->drupalPost('admin/config/search/bibdk_custom_search', $edit, 'Save');
-    // US1085-test
-    // $this->assertText('The page "' . $_bibdk_custom_search_page_title . '" have been created');
 
     // Test creation of a custom search element.
     $edit = array();
     $element_title = $edit['bibdk_custom_search_page_elements[0][element_title]'] = $this->randomName(8);
     $this->drupalPost('admin/config/search/bibdk_custom_search/elements', $edit, 'Save');
-    // US1085-test
-    // $this->assertText('The element "' . $element_title . '" have been created.');
 
     // Test creation of a custom search value.
     $edit = array();
     $_bibdk_custom_search_value_title = $edit['bibdk_custom_search[0][value_title]'] = $this->randomName(8);
     $this->drupalPost('admin/config/search/bibdk_custom_search/values', $edit, 'Save');
-    // US1085-test
-    // $this->assertText('The value "' . $_bibdk_custom_search_value_title . '" have been created.');
 
     // Test editing a custom search value.
     //$this->drupalPost('admin/config/search/bibdk_custom_search/values', null, 'edit');
