@@ -55,7 +55,7 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string) {
   $options['query'] = array('query' => check_plain($string)) + $value_vars + $settings;
   
   $url = url($url, $options);
- 
+
   $curl = new MicroCURL();
   $result = json_decode($curl->get(array($url)));
   $curl->close();
@@ -139,7 +139,7 @@ function bibdk_autocomplete_set_path(&$form, $elements, $element_label, $values,
         if (
           is_array($element_var) &&
           isset($element_var['#id']) &&
-          $element_var['#id'] == $v_uuid &&
+          $element_var['#id'] == $values['id'] &&
           $values['autocomplete']
         ) {
           $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'bibdk/autocomplete/' . $p_uuid . '/' . $v_uuid;

@@ -178,6 +178,16 @@ function bibdk_autocomplete_admin() {
       '#default_value' => ( !empty($default_value['sort']) ) ? $default_value['sort'] : '',
     );
 
+    // see also drupal_html_id
+    $id = strtr(drupal_strtolower('input ' . $value->element_label), array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
+    $id = preg_replace('/[^A-Za-z0-9\-_]/', '', $id);
+    $id = preg_replace('/\-+/', '-', $id);
+    $form['bibdk_autocomplete_var'][ $value->p_uuid ]['vars'][ $value->v_uuid ]['id'] = array(
+      '#type' => 'hidden',
+      '#title' => t('Id'),
+      '#value' => ( !empty($value->element_label) ) ? $id : '',
+    );
+
   }
 
   $form['#submit'][] = 'bibdk_autocomplete_admin_submit';
