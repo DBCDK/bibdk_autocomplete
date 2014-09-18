@@ -55,6 +55,7 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string) {
   $options['query'] = array('query' => check_plain($string)) + $value_vars + $settings;
   
   $url = url($url, $options);
+  watchdog('bibdk_autocomplete', 'Autocomplete URL sent: ' . $url, array(), $severity = WATCHDOG_DEBUG);
 
   $curl = new MicroCURL();
   $result = json_decode($curl->get(array($url)));
