@@ -159,7 +159,6 @@ function bibdk_autocomplete_truncate($string, $width) {
  * @return mixed
  */
 function bibdk_autocomplete_form_alter(&$form, &$form_state, $form_id) {
-  dpm($form_id);
   switch ($form_id) {
     case 'search_block_form';
     case 'search_form';
