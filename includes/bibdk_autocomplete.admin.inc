@@ -135,17 +135,20 @@ function bibdk_autocomplete_admin() {
       '#title' => $value->menu_title . ' > ' . $value->element_label,
       '#tree' => TRUE,
       '#collapsible' => TRUE,
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-fieldset')),
     );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['page_path'] = array(
       '#type' => 'hidden',
       '#default_value' => $value->page_path,
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-page-path')),
     );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['autocomplete'] = array(
       '#type' => 'checkbox',
       '#title' => t('Autocomplete', array(), array('context' => 'bibdk_autocomplete_admin')),
       '#default_value' => (!empty($default_value['autocomplete'])) ? $default_value['autocomplete'] : FALSE,
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-autocomplete')),
     );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['index'] = array(
@@ -153,6 +156,7 @@ function bibdk_autocomplete_admin() {
       '#title' => t('Term index', array(), array('context' => 'bibdk_autocomplete_admin')),
       '#size' => 25,
       '#default_value' => (!empty($default_value['index'])) ? $default_value['index'] : '',
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-index')),
     );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['facetIndex'] = array(
@@ -160,6 +164,7 @@ function bibdk_autocomplete_admin() {
       '#title' => t('Facet Index', array(), array('context' => 'bibdk_autocomplete_admin')),
       '#size' => 25,
       '#default_value' => (!empty($default_value['facetIndex'])) ? $default_value['facetIndex'] : '',
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-facetIndex')),
     );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['filterQuery'] = array(
@@ -167,6 +172,7 @@ function bibdk_autocomplete_admin() {
       '#title' => t('Filter Query', array(), array('context' => 'bibdk_autocomplete_admin')),
       '#size' => 25,
       '#default_value' => (!empty($default_value['filterQuery'])) ? $default_value['filterQuery'] : '',
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-filterQuery')),
     );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['sort'] = array(
@@ -174,6 +180,20 @@ function bibdk_autocomplete_admin() {
       '#title' => t('Output sort order', array(), array('context' => 'bibdk_autocomplete_admin')),
       '#options' => array('count' => 'count', 'index' => 'index',),
       '#default_value' => (!empty($default_value['sort'])) ? $default_value['sort'] : '',
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-sort')),
+    );
+
+    $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['operation'] = array(
+      '#type' => 'select',
+      '#title' => t('Function', array(), array('context' => 'bibdk_autocomplete_admin')),
+      '#options' => array(
+        'terms' => t('Terms', array(), array('context' => 'bibdk_autocomplete_admin')),
+        'facets' => t('Facets', array(), array('context' => 'bibdk_autocomplete_admin')),
+        'facetSpell' => t('FacetSpell', array(), array('context' => 'bibdk_autocomplete_admin')),
+        'scan' => t('Scan', array(), array('context' => 'bibdk_autocomplete_admin')),
+      ),
+      '#default_value' => (!empty($default_value['operation'])) ? $default_value['operation'] : '',
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-operation')),
     );
 
     // see also drupal_html_id
@@ -192,6 +212,8 @@ function bibdk_autocomplete_admin() {
     );
 
   }
+
+  $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.admin.js';
 
   $form['#submit'][] = 'bibdk_autocomplete_admin_submit';
 

@@ -4,17 +4,22 @@
  * Code for Bibliotek.dk Autocomplete
  */
 
+function log_to_file($text) {
+  $f = fopen('/tmp/drupal_debug.txt', 'a');
+  fwrite($f, date('Ymd H:i:s - ') . print_r($text,1) . "\n");
+  fclose($f);
+}
 
 /**
  * Implements hook_menu().
  */
 function bibdk_autocomplete_menu() {
 
-  $items['bibdk/autocomplete/%/%'] = array(
+  $items['autocomplete/%/%'] = array(
     'title' => 'Bibliotek.dk autocomplete',
     'description' => 'Autocomplete callback',
     'page callback' => 'bibdk_autocomplete',
-    'page arguments' => array(2, 3),
+    'page arguments' => array(1, 2),
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
   );
@@ -42,11 +47,11 @@ function bibdk_autocomplete_menu() {
  */
 function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
   $items = array();
-  $settings = variable_get('bibdk_autocomplete_settings', array());
-  $url = variable_get('bibdk_autocomplete_rest_url', null);
-  $vars = variable_get('bibdk_autocomplete_var', array());
+  $settings   = variable_get('bibdk_autocomplete_settings', array());
+  $vars       = variable_get('bibdk_autocomplete_var', array());
   $value_vars = $vars[$p_uuid]['vars'][$v_uuid];
   unset($value_vars['autocomplete']);
+
   if (empty($value_vars['index'])) {
     watchdog('bibdk_autocomplete', 'Autocomplete index not defined for value uuid ' . $v_uuid, array(), $severity = WATCHDOG_WARNING);
     drupal_json_output(array());
@@ -54,8 +59,12 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
   }
 
   $filter_array = bibdk_autocomplete_parse_filters($string);
+log_to_file($filter_array);
   $search_string = key($filter_array);
+log_to_file($search_string);
   $filter_string = bibdk_autocomplete_set_filter_query($filter_array[$search_string]);
+log_to_file($filter_string);
+
   if (!empty($filter_string)) {
     if (!empty($value_vars['filterQuery'])) {
       $value_vars['filterQuery'] .= ' AND ' . $filter_string;
@@ -65,10 +74,23 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
   }
 
   $settings['highlight'] = ($settings['highlight']) ? 'true' : null;
+  $settings['maxTime'] = ($settings['maxTime']) ? $settings['maxTime'] : 300;
+  $operation = $path = ($value_vars['operation']) ? $value_vars['operation'] : 'facetSpell';
+  unset($value_vars['operation']);
+  unset($value_vars['id']);
+  
   $options['query'] = array('query' => check_plain($search_string)) + $value_vars + $settings;
-  $options['maxTime'] = 300;
 
-  $url = ($value_vars['facetIndex']) ? $url . '/facetSpell' : $url . '/terms';
+  // The terms operation can be used to alphabetically "scan" an index from a point determined by a prefix. 
+  // Make sure that "query" is empty, "sort" is set to index, and "lower" is the prefix determining the start point in the index.
+  if ($operation == 'scan') {
+    $path = 'terms';
+    $value_vars['sort'] = 'index';
+    $value_vars['facetIndex'] = NULL;
+    $options['query'] = array('lower' => check_plain($search_string)) + $value_vars + $settings;
+  }
+
+  $url = variable_get('bibdk_autocomplete_rest_url', null) . '/' . $path;
   $url = url($url, $options);
 
   watchdog('bibdk_autocomplete', 'Autocomplete URL sent: ' . $url, array(), $severity = WATCHDOG_DEBUG);
@@ -79,11 +101,24 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
 
   if (!empty($result->suggestions)) {
     foreach ($result->suggestions as $suggestion) {
-      if (strpos($suggestion->phrase, ' ')) {
-        // contains blank
-        $items['"' . bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64) . '"'] = $suggestion->phrase;
-      } else {
-        $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64)] = $suggestion->phrase;
+      switch ($operation) {
+        case 'terms':
+        case 'scan':
+        case 'facets':
+          if (strpos($suggestion->suggestion, ' ')) {
+            // contains blank
+            $items['"' . bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->suggestion)), 64) . '"'] = $suggestion->suggestion;
+          } else {
+            $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->suggestion)), 64)] = $suggestion->suggestion;
+          }
+          break;
+        case 'facetSpell':
+          if (strpos($suggestion->phrase, ' ')) {
+            // contains blank
+            $items['"' . bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64) . '"'] = $suggestion->phrase;
+          } else {
+            $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64)] = $suggestion->phrase;
+          }
       }
     }
   } else {
@@ -95,6 +130,7 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
       $items = array();
     }
   }
+
   // Return the result to the form in json
   drupal_json_output($items);
   drupal_exit();
@@ -161,7 +197,7 @@ function bibdk_autocomplete_truncate($string, $width) {
 function bibdk_autocomplete_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
     case 'search_block_form';
-    case 'search_form';
+    // case 'search_form';
       _bibdk_autocomplete_form_search_block_form_alter($form, $form_state, $form_id);
       break;
   }
@@ -172,6 +208,9 @@ function bibdk_autocomplete_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_form_FORM_ID_alter() for form search_block_form and search_form.
  */
 function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, $form_id) {
+
+  $vars = NULL;
+  
   if (!empty($form['page_id']['#value'])) {
     $page_path = $form['page_id']['#value'];
   } else {
@@ -183,6 +222,7 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
   }
 
   $autocomplete_elements = variable_get('bibdk_autocomplete_var', array());
+
   foreach ($autocomplete_elements as $key => $page) {
     if ($page['page_path'] == $page_path) {
       $vars = $page['vars'];
@@ -191,6 +231,7 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
   }
 
   if (!empty($vars)) {
+
     foreach ($vars as $v_uuid => $values) {
       if (!empty($form['advanced']) && !empty($form['advanced']['main'])) {
         foreach ($form['advanced']['main'] as $element_label => $elements) {
@@ -202,22 +243,35 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
           bibdk_autocomplete_set_path($form, $elements, $element_label, $values, $p_uuid, $v_uuid, 'expand');
         }
       }
+      if ($values['operation'] == 'scan') {
+        $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.scan.js';
+      }
     }
+
+    $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.js';
+    $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.overrides.js';
+    $form['#attached']['js'] = array_unique($form['#attached']['js']);
+
   }
-  $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.js';
-  return $form;
+
 }
 
 /**
  * helper function for hook_form_FORM_ID_alter()
  */
 function bibdk_autocomplete_set_path(&$form, $elements, $element_label, $values, $p_uuid, $v_uuid, $region = 'main') {
-  if (is_array($elements)) {
-    foreach ($elements as $element_uuid => $element_val) {
-      foreach ($element_val as $element_key => $element_var) {
-        if (is_array($element_var) && isset($element_var['#id']) && $element_var['#id'] == $values['id'] && $values['autocomplete']) {
-          $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'bibdk/autocomplete/' . $p_uuid . '/' . $v_uuid;
-        }
+  if (!is_array($elements)) {
+    return;
+  }
+  foreach ($elements as $element_uuid => $element_val) {
+    foreach ($element_val as $element_key => $element_var) {
+      if (!is_array($element_var)) {
+        continue;
+      }
+      if (isset($element_var['#id']) && $element_var['#id'] == $values['id'] && $values['autocomplete']) {
+        $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-autocomplete'] = $values['operation'];
+        $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'autocomplete/' . $p_uuid . '/' . $v_uuid;
+// dpm($form['advanced'][$region][$element_label][$element_uuid][$element_key]);
       }
     }
   }

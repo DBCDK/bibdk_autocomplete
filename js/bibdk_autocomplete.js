@@ -1,7 +1,9 @@
 (function ($) {
+
   var BibdkAutocomplete = {};
   BibdkAutocomplete.InputFields = {};
   BibdkAutocomplete.InputFields.fields = [];
+
   /**
    * Register all autocomplete fields in search block form
    */
@@ -16,7 +18,7 @@
 
   /**
    * Add customSearch method to Drupal.ADCB
-   *  @see misc/autocomplete.js
+   *  @see bibdk_autocomplete.overrides.js
    *
    * @param input
    * @param searchString

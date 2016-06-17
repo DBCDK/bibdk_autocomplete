@@ -14,6 +14,12 @@
     width: 16em;
 }
 
+#bibdk-autocomplete-admin .form-type-select {
+    padding: 0 9px 0;
+    float: left;
+    width: 9em;
+}
+
 #bibdk-autocomplete-admin .form-item-bibdk-autocomplete-settings-agency,
 #bibdk-autocomplete-admin .form-item-bibdk-autocomplete-settings-maxSuggestions,
 #bibdk-autocomplete-admin .form-item-bibdk-autocomplete-settings-maxTime,
@@ -34,5 +40,9 @@
     padding: 18px 9px 0;
     float: left;
     clear: left;
+}
+
+#bibdk-autocomplete-admin .disabled, #bibdk-autocomplete-admin input:disabled {
+    color: #ccc;
 }
 
