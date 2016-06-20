@@ -4,12 +4,6 @@
  * Code for Bibliotek.dk Autocomplete
  */
 
-function log_to_file($text) {
-  $f = fopen('/tmp/drupal_debug.txt', 'a');
-  fwrite($f, date('Ymd H:i:s - ') . print_r($text,1) . "\n");
-  fclose($f);
-}
-
 /**
  * Implements hook_menu().
  */
@@ -59,11 +53,8 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
   }
 
   $filter_array = bibdk_autocomplete_parse_filters($string);
-log_to_file($filter_array);
-  $search_string = key($filter_array);
-log_to_file($search_string);
-  $filter_string = bibdk_autocomplete_set_filter_query($filter_array[$search_string]);
-log_to_file($filter_string);
+  $search_string = $filter_array['search_string'];
+  $filter_string = bibdk_autocomplete_set_filter_query($filter_array['filters']);
 
   if (!empty($filter_string)) {
     if (!empty($value_vars['filterQuery'])) {
@@ -137,19 +128,20 @@ log_to_file($filter_string);
 }
 
 function bibdk_autocomplete_parse_filters($filter_string) {
+  $res = array();
   $search_filter = explode('::::', $filter_string);
-  $search_string = $search_filter[0];
-  $filter_array = array();
+  $res['search_string'] = trim($search_filter[0], " \t\n\r\0\x0B\"");
+  $res['filters'] = array();
   for ($i = 1; $i < count($search_filter); $i++) {
     $filter = array();
     $elements = explode('$$', $search_filter[$i]);
     $filter['v_uuid'] = $elements[0];
     $filter['p_uuid'] = $elements[1];
-    $filter['term'] = $elements[2];
-    $filter_array[] = $filter;
+    $filter['term'] = trim($elements[2], " \t\n\r\0\x0B\"");
+    $res['filters'][] = $filter;
   }
-  return array($search_string => $filter_array);
-}
+  return $res;
+} 
 
 function bibdk_autocomplete_set_filter_query(array $filters) {
   $filter_query = '';
@@ -243,14 +235,10 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
           bibdk_autocomplete_set_path($form, $elements, $element_label, $values, $p_uuid, $v_uuid, 'expand');
         }
       }
-      if ($values['operation'] == 'scan') {
-        $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.scan.js';
-      }
     }
 
     $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.js';
     $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.overrides.js';
-    $form['#attached']['js'] = array_unique($form['#attached']['js']);
 
   }
 
@@ -271,7 +259,6 @@ function bibdk_autocomplete_set_path(&$form, $elements, $element_label, $values,
       if (isset($element_var['#id']) && $element_var['#id'] == $values['id'] && $values['autocomplete']) {
         $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-autocomplete'] = $values['operation'];
         $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'autocomplete/' . $p_uuid . '/' . $v_uuid;
-// dpm($form['advanced'][$region][$element_label][$element_uuid][$element_key]);
       }
     }
   }

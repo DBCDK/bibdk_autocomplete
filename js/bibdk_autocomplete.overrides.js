@@ -13,7 +13,7 @@
   /**
    * overrides for drupal autocomplete w/o ajax
    */
-  if (Drupal.jsAC){
+  if (Drupal.jsAC) {
     Drupal.jsAC.prototype.found = found;
     Drupal.autocompleteSubmit = autocompleteSubmit;
   }
@@ -28,8 +28,6 @@
 
   /**
    * overrides Drupal.jsAC.prototype.found
-   * @see misc/autocomplete.js
-   *
    * Fixes autocomplete for touch devices using click instead of mousedown
    */
   function found(matches){
@@ -38,6 +36,8 @@
       return false;
     }
 
+    var autocomplete_function = this.input.getAttribute('data-autocomplete');
+    
     // Prepare matches.
     var ul = $('<ul></ul>');
     var ac = this;
@@ -57,19 +57,21 @@
         .appendTo(ul);
     }
 
-  $('<li></li>')
-	.html($('<div></div>').html('next 10'))
-	.click(function(){
-	  ac.select(this);
-	})
-	.mouseover(function(){
-	  ac.highlight(this);
-	})
-	.mouseout(function(){
-	  ac.unhighlight(this);
-	})
-	.data('autocompleteValue', key)
-	.appendTo(ul);
+    if (autocomplete_function == 'scan') {
+      $('<li></li>')
+        .html($('<div></div>').html('Next 10'))
+        .click(function(){
+          ac.populatePopup(matches[key]);
+         })
+        .mouseover(function(){
+          ac.highlight(this);
+        })
+        .mouseout(function(){
+          ac.unhighlight(this);
+        })
+        .data('autocompleteValue', key)
+        .appendTo(ul);
+    }
 
     // Show popup with matches, if any.
     if (this.popup){
