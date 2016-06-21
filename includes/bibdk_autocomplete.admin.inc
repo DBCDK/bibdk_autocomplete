@@ -196,6 +196,13 @@ function bibdk_autocomplete_admin() {
       '#attributes' => array('class'=>array('bibdk-autocomplete-admin-operation')),
     );
 
+    $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['aggregate'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Aggregate filter queries', array(), array('context' => 'bibdk_autocomplete_admin')),
+      '#default_value' => (!empty($default_value['aggregate'])) ? $default_value['aggregate'] : FALSE,
+      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-aggregate')),
+    );
+
     // see also drupal_html_id
     $id = strtr(drupal_strtolower('input ' . $value->element_label), array(
       ' ' => '-',

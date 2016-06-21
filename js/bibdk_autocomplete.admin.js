@@ -22,9 +22,19 @@
     if ($obj.val() == 'scan') {
       $obj.parent().parent().find('.bibdk-autocomplete-admin-sort').attr('disabled',true);
       $obj.parent().parent().find('.bibdk-autocomplete-admin-sort').closest('div.form-item').addClass('disabled');
+      if ( jQuery.isFunction( $obj.parent().parent().find('.bibdk-autocomplete-admin-aggregate').prop ) ) {
+        //  jQuery 1.6+
+        $obj.parent().parent().find('.bibdk-autocomplete-admin-aggregate').prop('checked', false);
+      } else {
+        $obj.parent().parent().find('.bibdk-autocomplete-admin-aggregate').attr('checked', false);
+      }
+      $obj.parent().parent().find('.bibdk-autocomplete-admin-aggregate').attr('disabled',true);
+      $obj.parent().parent().find('.bibdk-autocomplete-admin-aggregate').closest('div.form-item').addClass('disabled');
     } else {
       $obj.parent().parent().find('.bibdk-autocomplete-admin-sort').attr('disabled',false);
       $obj.parent().parent().find('.bibdk-autocomplete-admin-sort').closest('div.form-item').removeClass('disabled');
+      $obj.parent().parent().find('.bibdk-autocomplete-admin-aggregate').attr('disabled',false);
+      $obj.parent().parent().find('.bibdk-autocomplete-admin-aggregate').closest('div.form-item').removeClass('disabled');
     }
     if ($obj.val() == 'terms' || $obj.val() == 'scan') {
       $obj.parent().parent().find('.bibdk-autocomplete-admin-facetIndex').attr('disabled',true);

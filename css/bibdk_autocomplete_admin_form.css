@@ -39,7 +39,6 @@
 #bibdk-autocomplete-admin .form-type-checkbox {
     padding: 18px 9px 0;
     float: left;
-    clear: left;
 }
 
 #bibdk-autocomplete-admin .disabled, #bibdk-autocomplete-admin input:disabled {

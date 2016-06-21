@@ -52,6 +52,12 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
     drupal_exit();
   }
 
+  $settings['highlight'] = ($settings['highlight']) ? 'true' : null;
+  $settings['maxTime'] = ($settings['maxTime']) ? $settings['maxTime'] : 300;
+  $operation = $path = ($value_vars['operation']) ? $value_vars['operation'] : 'facetSpell';
+  unset($value_vars['operation']);
+  unset($value_vars['id']);
+  
   $filter_array = bibdk_autocomplete_parse_filters($string);
   $search_string = $filter_array['search_string'];
   $filter_string = bibdk_autocomplete_set_filter_query($filter_array['filters']);
@@ -64,21 +70,28 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
     }
   }
 
-  $settings['highlight'] = ($settings['highlight']) ? 'true' : null;
-  $settings['maxTime'] = ($settings['maxTime']) ? $settings['maxTime'] : 300;
-  $operation = $path = ($value_vars['operation']) ? $value_vars['operation'] : 'facetSpell';
-  unset($value_vars['operation']);
-  unset($value_vars['id']);
-  
   $options['query'] = array('query' => check_plain($search_string)) + $value_vars + $settings;
 
   // The terms operation can be used to alphabetically "scan" an index from a point determined by a prefix. 
   // Make sure that "query" is empty, "sort" is set to index, and "lower" is the prefix determining the start point in the index.
+  // 'scan' don't support filterQuery. Yet, anyway...
   if ($operation == 'scan') {
     $path = 'terms';
     $value_vars['sort'] = 'index';
     $value_vars['facetIndex'] = NULL;
+    unset($value_vars['filterQuery']);
     $options['query'] = array('lower' => check_plain($search_string)) + $value_vars + $settings;
+  }
+
+  // clean up url parameters
+  if (empty($options['query']['highlight'])) {
+    unset($options['query']['highlight.pre']);
+    unset($options['query']['highlight.post']);
+  }
+  foreach ($options['query'] as $var => $val) {
+    if (empty($options['query'][$var])) {
+      unset($options['query'][$var]);
+    }
   }
 
   $url = variable_get('bibdk_autocomplete_rest_url', null) . '/' . $path;
@@ -257,7 +270,8 @@ function bibdk_autocomplete_set_path(&$form, $elements, $element_label, $values,
         continue;
       }
       if (isset($element_var['#id']) && $element_var['#id'] == $values['id'] && $values['autocomplete']) {
-        $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-autocomplete'] = $values['operation'];
+        $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-autocomplete-function'] = $values['operation'];
+        $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-autocomplete-aggregate'] = $values['aggregate'];
         $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'autocomplete/' . $p_uuid . '/' . $v_uuid;
       }
     }

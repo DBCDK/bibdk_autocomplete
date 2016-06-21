@@ -36,7 +36,7 @@
       return false;
     }
 
-    var autocomplete_function = this.input.getAttribute('data-autocomplete');
+    var autocomplete_function = this.input.getAttribute('data-autocomplete-function');
     
     // Prepare matches.
     var ul = $('<ul></ul>');

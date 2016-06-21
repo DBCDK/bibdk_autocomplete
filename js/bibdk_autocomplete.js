@@ -24,17 +24,22 @@
    * @param searchString
    */
   Drupal.ACDB.prototype.customSearch = function (input, searchString) {
+
     var fields = BibdkAutocomplete.InputFields.fields;
+    var autocomplete_aggregate = input.input.getAttribute('data-autocomplete-aggregate');
+
     for (var key in fields) {
       var obj = fields[key];
-      if (obj.id != input.input.id) {
+      if (obj.id != input.input.id && autocomplete_aggregate == "1") {
         if ($('#' + obj.id).val().length > 0) {
           var filter = obj.filter;
           searchString += '::::' + obj.filter + '$$' + $('#' + obj.id).val();
         }
       }
     }
+
     return this.search(searchString);
+
   };
 
   /**
