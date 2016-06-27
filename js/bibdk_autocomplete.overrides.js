@@ -61,6 +61,7 @@
       $('<li></li>')
         .html($('<div></div>').html('Next 10'))
         .click(function(){
+          ac.select(this);
           ac.populatePopup(matches[key]);
          })
         .mouseover(function(){
