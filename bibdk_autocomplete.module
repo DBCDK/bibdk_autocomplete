@@ -10,7 +10,7 @@
 function bibdk_autocomplete_menu() {
 
   $items['autocomplete/%/%'] = array(
-    'title' => 'Bibliotek.dk autocomplete',
+    'title' => 'Custom search autocomplete',
     'description' => 'Autocomplete callback',
     'page callback' => 'bibdk_autocomplete',
     'page arguments' => array(1, 2),
@@ -19,7 +19,7 @@ function bibdk_autocomplete_menu() {
   );
 
   $items['admin/config/search/bibdk_autocomplete'] = array(
-    'title' => 'Bibliotek.dk autocomplete settings',
+    'title' => 'Custom search autocomplete',
     'description' => 'Settings for bibliotek.dk autocomplete',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('bibdk_autocomplete_admin'),
