@@ -42,7 +42,7 @@ function bibdk_autocomplete_menu() {
 function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FALSE) {
   $items = array();
 
-  if (size_of($string) < 3 ) {
+  if (strlen($string) < 3 ) {
     drupal_json_output($items);
     drupal_exit();
   }

@@ -32,7 +32,7 @@
    */
   function found(matches){
     // If no value in the textfield, do not show the popup.
-    if (!this.input.value.length){
+    if (!this.input.value.length || this.input.value.length < 3){
       return false;
     }
 
