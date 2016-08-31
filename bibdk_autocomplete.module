@@ -12,7 +12,7 @@ function bibdk_autocomplete_menu() {
   $items['autocomplete/%/%'] = array(
     'title' => 'Custom search autocomplete',
     'description' => 'Autocomplete callback',
-    'page callback' => 'bibdk_autocomplete',
+    'page callback' => 'bibdk_autocomplete_callback',
     'page arguments' => array(1, 2),
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -39,8 +39,14 @@ function bibdk_autocomplete_menu() {
  * @param bool $retry -- the server tends to respond with a error 500 however
  *                       retrying once seems to fix it most of the times.
  */
-function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
+function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FALSE) {
   $items = array();
+
+  if (size_of($string) < 3 ) {
+    drupal_json_output($items);
+    drupal_exit();
+  }
+
   $settings   = variable_get('bibdk_autocomplete_settings', array());
   $vars       = variable_get('bibdk_autocomplete_var', array());
   $value_vars = $vars[$p_uuid]['vars'][$v_uuid];
@@ -128,10 +134,9 @@ function bibdk_autocomplete($p_uuid, $v_uuid, $string, $retry = false) {
   } else {
     if (empty($result->suggestions) && !$retry) {
       watchdog('bibdk_autocomplete', 'AUTOCOMPLETE RETRY' . $url, array(), $severity = WATCHDOG_WARNING);
-      bibdk_autocomplete($p_uuid, $v_uuid, $string, true);
+      bibdk_autocomplete_callback($p_uuid, $v_uuid, $string, TRUE);
     } else {
       watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . $url, array(), $severity = WATCHDOG_WARNING);
-      $items = array();
     }
   }
 
