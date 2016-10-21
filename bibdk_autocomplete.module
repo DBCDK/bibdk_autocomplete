@@ -277,8 +277,9 @@ function bibdk_autocomplete_set_path(&$form, $elements, $element_label, $values,
       if (isset($element_var['#id']) && $element_var['#id'] == $values['id'] && $values['autocomplete']) {
         $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-autocomplete-function'] = $values['operation'];
         $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-autocomplete-aggregate'] = $values['aggregate'];
+        $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#attributes']['data-server-https'] = isset($_SERVER['HTTPS']);
         $form['advanced'][$region][$element_label][$element_uuid][$element_key]['#autocomplete_path'] = 'autocomplete/' . $p_uuid . '/' . $v_uuid;
-      }
+		}
     }
   }
 }

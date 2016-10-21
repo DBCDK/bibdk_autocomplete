@@ -24,10 +24,11 @@
    * @param searchString
    */
   Drupal.ACDB.prototype.customSearch = function (input, searchString) {
-
     var fields = BibdkAutocomplete.InputFields.fields;
     var autocomplete_aggregate = input.input.getAttribute('data-autocomplete-aggregate');
-
+	if (input.input.getAttribute('data-server-https')) {
+	  this.uri.replace(/^http:\/\//i, 'https://');
+	}
     for (var key in fields) {
       var obj = fields[key];
       if (obj.id != input.input.id && autocomplete_aggregate == "1") {
@@ -47,7 +48,11 @@
    *  copied from misc/autocomplete.js
    */
   Drupal.jsAC.prototype.populatePopup = function () {
+    if (!this.input.value.length || this.input.value.length < 3){
+      return false;
+    }
     var $input = $(this.input);
+    // If no value in the textfield, do not show the popup.
     var position = $input.position();
     // Show popup.
     if (this.popup) {
