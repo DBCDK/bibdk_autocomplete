@@ -26,9 +26,9 @@
   Drupal.ACDB.prototype.customSearch = function (input, searchString) {
     var fields = BibdkAutocomplete.InputFields.fields;
     var autocomplete_aggregate = input.input.getAttribute('data-autocomplete-aggregate');
-	if (input.input.getAttribute('data-server-https')) {
-	  this.uri.replace(/^http:\/\//i, 'https://');
-	}
+    if (Drupal.settings.https !== undefined && Drupal.settings.https) {
+      this.uri = this.uri.replace(/^http:\/\//i, 'https://');
+    }
     for (var key in fields) {
       var obj = fields[key];
       if (obj.id != input.input.id && autocomplete_aggregate == "1") {
