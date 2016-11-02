@@ -222,7 +222,7 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
   $vars = NULL;
   
   $settings = array(
-    'https' => isset($_SERVER['HTTPS']),
+    'https' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;,
   );
   drupal_add_js($settings, 'setting');
     
