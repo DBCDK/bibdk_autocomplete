@@ -63,7 +63,7 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FA
   $operation = $path = ($value_vars['operation']) ? $value_vars['operation'] : 'facetSpell';
   unset($value_vars['operation']);
   unset($value_vars['id']);
-  
+
   $filter_array = bibdk_autocomplete_parse_filters($string);
   $search_string = $filter_array['search_string'];
   $filter_string = bibdk_autocomplete_set_filter_query($filter_array['filters']);
@@ -78,7 +78,7 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FA
 
   $options['query'] = array('query' => check_plain($search_string)) + $value_vars + $settings;
 
-  // The terms operation can be used to alphabetically "scan" an index from a point determined by a prefix. 
+  // The terms operation can be used to alphabetically "scan" an index from a point determined by a prefix.
   // Make sure that "query" is empty, "sort" is set to index, and "lower" is the prefix determining the start point in the index.
   // 'scan' don't support filterQuery. Yet, anyway...
   if ($operation == 'scan') {
@@ -159,7 +159,7 @@ function bibdk_autocomplete_parse_filters($filter_string) {
     $res['filters'][] = $filter;
   }
   return $res;
-} 
+}
 
 function bibdk_autocomplete_set_filter_query(array $filters) {
   $filter_query = '';
@@ -220,12 +220,23 @@ function bibdk_autocomplete_form_alter(&$form, &$form_state, $form_id) {
 function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, $form_id) {
 
   $vars = NULL;
-  
+
+  // check if this is https or not - we need it for the autocomplete javascript
+  // @see js/bibdk_autocomplete.js
+  // if page is behind a proxy
+  if(!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+    $https = ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https');
+  }
+  else {
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
+  }
+
   $settings = array(
-    'https' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443,
+    'https' => $https,
   );
+
   drupal_add_js($settings, 'setting');
-    
+
   if (!empty($form['page_id']['#value'])) {
     $page_path = $form['page_id']['#value'];
   } else {
