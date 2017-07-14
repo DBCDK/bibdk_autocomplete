@@ -31,6 +31,20 @@ function bibdk_autocomplete_menu() {
 }
 
 /**
+ * Implements hook_ting_client_webservice (@see ting_client.module)
+ * */
+ function bibdk_autocomplete_ting_client_webservice() {
+  $ret = array();
+  $ret['openSuggestionTerm']['class']   = 'openSuggestionTerm';
+  $ret['openSuggestionTerm']['url']     = 'openSuggestionTerm_url';
+  $ret['openSuggestionTerm']['method']  = 'REST';
+  $ret['openSuggestionFacetspell']['class']   = 'openSuggestionFacetspell';
+  $ret['openSuggestionFacetspell']['url']     = 'openSuggestionFacetspell_url';
+  $ret['openSuggestionFacetspell']['method']  = 'REST';
+  return $ret;
+}
+
+/**
  * Callback function used when input is entered in a search field.
  *
  * @param      $p_uuid
@@ -100,49 +114,70 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FA
     }
   }
 
-  $url = variable_get('bibdk_autocomplete_rest_url', null) . '/' . $path;
-  $url = url($url, $options);
+  $client = new ting_client_class();
+  switch ($operation) {
+    case 'terms':
+    case 'scan':
+    case 'facets':
+      $action = 'openSuggestionTerm';
+      break;
+    case 'facetSpell':
+      $action = 'openSuggestionFacetspell';
+  }
+  $result = $client->do_request($action, $options['query']);
 
-  watchdog('bibdk_autocomplete', 'Autocomplete URL sent: ' . $url, array(), $severity = WATCHDOG_DEBUG);
-
-  $curl = new MicroCURL();
-  $result = json_decode($curl->get(array($url)));
-  $curl->close();
-
-  if (!empty($result->suggestions)) {
-    foreach ($result->suggestions as $suggestion) {
-      switch ($operation) {
-        case 'terms':
-        case 'scan':
-        case 'facets':
-          if (strpos($suggestion->suggestion, ' ')) {
-            // contains blank
-            $items['"' . bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->suggestion)), 64) . '"'] = $suggestion->suggestion;
-          } else {
-            $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->suggestion)), 64)] = $suggestion->suggestion;
-          }
-          break;
-        case 'facetSpell':
-          if (strpos($suggestion->phrase, ' ')) {
-            // contains blank
-            $items['"' . bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64) . '"'] = $suggestion->phrase;
-          } else {
-            $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64)] = $suggestion->phrase;
-          }
+  switch ($operation) {
+    case 'terms':
+    case 'scan':
+    case 'facets':
+      if (empty($result->suggestions)) {
+        bibdk_autocomplete_callback_retry($p_uuid, $v_uuid, $string, $action, $options, $retry);
       }
-    }
-  } else {
-    if (empty($result->suggestions) && !$retry) {
-      watchdog('bibdk_autocomplete', 'AUTOCOMPLETE RETRY' . $url, array(), $severity = WATCHDOG_WARNING);
-      bibdk_autocomplete_callback($p_uuid, $v_uuid, $string, TRUE);
-    } else {
-      watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . $url, array(), $severity = WATCHDOG_WARNING);
-    }
+      foreach ($result->suggestions as $suggestion) {
+        if (strpos($suggestion->suggestion, ' ')) {
+          // contains blank
+          $items['"' . bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->suggestion)), 64) . '"'] = $suggestion->suggestion;
+        } else {
+          $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->suggestion)), 64)] = $suggestion->suggestion;
+        }
+      }
+      break;
+    case 'facetSpell':
+      if (empty($result->suggestion)) {
+        bibdk_autocomplete_callback_retry($p_uuid, $v_uuid, $string, $action, $options, $retry);
+      }
+      foreach ($result->suggestion as $suggestion) {
+        if (strpos($suggestion->phrase, ' ')) {
+          // contains blank
+          $items['"' . bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64) . '"'] = $suggestion->phrase;
+        } else {
+          $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64)] = $suggestion->phrase;
+        }
+      }
   }
 
   // Return the result to the form in json
   drupal_json_output($items);
   drupal_exit();
+}
+
+/**
+ * Retry query *once* if empty response. Otherwise log error.
+ *
+ * @param $p_uuid
+ * @param $v_uuid
+ * @param $string
+ * @param $action
+ * @param $options
+ * @param $retry
+ */
+function bibdk_autocomplete_callback_retry($p_uuid, $v_uuid, $string, $action, $options, $retry) {
+  if (!$retry) {
+    watchdog('bibdk_autocomplete', 'AUTOCOMPLETE RETRY ' . $action . ': ' . http_build_query($options['query']), array(), WATCHDOG_WARNING);
+    bibdk_autocomplete_callback($p_uuid, $v_uuid, $string, TRUE);
+  } else {
+    watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . ': ' . $action . ' : ' . http_build_query($options['query']), array(), WATCHDOG_WARNING);
+  }
 }
 
 function bibdk_autocomplete_parse_filters($filter_string) {
