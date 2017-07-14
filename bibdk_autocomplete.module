@@ -53,7 +53,7 @@ function bibdk_autocomplete_menu() {
  * @param bool $retry -- the server tends to respond with a error 500 however
  *                       retrying once seems to fix it most of the times.
  */
-function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FALSE) {
+function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '') {
   $items = array();
 
   if (strlen($string) < 3 ) {
@@ -124,14 +124,21 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FA
     case 'facetSpell':
       $action = 'openSuggestionFacetspell';
   }
-  $result = $client->do_request($action, $options['query']);
+
+  try {
+    $result = $client->do_request($action, $options['query']);
+  }
+  catch(Exception $e){
+    drupal_json_output(array());
+    drupal_exit();
+  }
 
   switch ($operation) {
     case 'terms':
     case 'scan':
     case 'facets':
       if (empty($result->suggestions)) {
-        bibdk_autocomplete_callback_retry($p_uuid, $v_uuid, $string, $action, $options, $retry);
+        bibdk_autocomplete_callback_error($action, $options);
       }
       foreach ($result->suggestions as $suggestion) {
         if (strpos($suggestion->suggestion, ' ')) {
@@ -144,7 +151,7 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FA
       break;
     case 'facetSpell':
       if (empty($result->suggestion)) {
-        bibdk_autocomplete_callback_retry($p_uuid, $v_uuid, $string, $action, $options, $retry);
+        bibdk_autocomplete_callback_error($action, $options);
       }
       foreach ($result->suggestion as $suggestion) {
         if (strpos($suggestion->phrase, ' ')) {
@@ -162,22 +169,15 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '', $retry = FA
 }
 
 /**
- * Retry query *once* if empty response. Otherwise log error.
+ * Log error.
  *
- * @param $p_uuid
- * @param $v_uuid
- * @param $string
  * @param $action
  * @param $options
- * @param $retry
  */
-function bibdk_autocomplete_callback_retry($p_uuid, $v_uuid, $string, $action, $options, $retry) {
-  if (!$retry) {
-    watchdog('bibdk_autocomplete', 'AUTOCOMPLETE RETRY ' . $action . ': ' . http_build_query($options['query']), array(), WATCHDOG_WARNING);
-    bibdk_autocomplete_callback($p_uuid, $v_uuid, $string, TRUE);
-  } else {
-    watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . ': ' . $action . ' : ' . http_build_query($options['query']), array(), WATCHDOG_WARNING);
-  }
+function bibdk_autocomplete_callback_error($action, $options) {
+  watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . ': ' . $action . ' : ' . http_build_query($options['query']), array(), WATCHDOG_WARNING);
+  drupal_json_output(array());
+  drupal_exit();
 }
 
 function bibdk_autocomplete_parse_filters($filter_string) {
