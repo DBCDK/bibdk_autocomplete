@@ -37,10 +37,8 @@ function bibdk_autocomplete_menu() {
   $ret = array();
   $ret['openSuggestionTerm']['class']   = 'openSuggestionTerm';
   $ret['openSuggestionTerm']['url']     = 'openSuggestionTerm_url';
-  $ret['openSuggestionTerm']['method']  = 'REST';
   $ret['openSuggestionFacetspell']['class']   = 'openSuggestionFacetspell';
   $ret['openSuggestionFacetspell']['url']     = 'openSuggestionFacetspell_url';
-  $ret['openSuggestionFacetspell']['method']  = 'REST';
   return $ret;
 }
 
