@@ -17,6 +17,11 @@ class openSuggestionTerm extends TingClientRequest implements ITingClientRequest
     return $result;
   }
 
+  // overwrite parent method
+  public function getClientType() {
+    return 'REST';
+  }
+
   /** Implementation of ITingClientRequestCache */
 
   /** \brief ITingClientRequestCache::cacheKey; get a cachekey
@@ -95,6 +100,11 @@ class openSuggestionFacetspell extends TingClientRequest implements ITingClientR
 
   public function processResponse(stdClass $result) {
     return $result;
+  }
+
+  // overwrite parent method
+  public function getClientType() {
+    return 'REST';
   }
 
   /** Implementation of ITingClientRequestCache */
