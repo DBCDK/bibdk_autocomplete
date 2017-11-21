@@ -112,6 +112,9 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '') {
     }
   }
 
+  if (!class_exists('TingClient') && module_exists('libraries')) {
+    libraries_load('TingClient');
+  }
   $client = new ting_client_class();
   switch ($operation) {
     case 'terms':
