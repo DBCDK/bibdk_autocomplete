@@ -6,7 +6,7 @@ class BibdkAutocompleteUnitTest extends DrupalUnitTestCase {
     return array(
       'name' => t('Autocomplete unit test'),
       'description' => t('Unit testing bibdk autocomplete'),
-      'group' => t('bibliotek.dk'),
+      'group' => t('Netpunkt / Bibliotek.dk'),
     );
   }
 

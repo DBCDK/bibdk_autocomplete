@@ -12,7 +12,7 @@ class BibdkAutocompleteWebTestCase extends DrupalWebTestCase {
     return array(
       'name' => 'Autocomplete Web Test',
       'description' => 'Bibdk Autocomplete test.',
-      'group' => 'bibliotek.dk',
+      'group' => 'Netpunkt / Bibliotek.dk',
     );
   }
 
