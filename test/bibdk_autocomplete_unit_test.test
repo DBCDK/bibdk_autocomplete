@@ -4,9 +4,9 @@ class BibdkAutocompleteUnitTest extends DrupalUnitTestCase {
 
   public static function getInfo() {
     return array(
-      'name' => t('Bibdk Autocomplete unit test'),
+      'name' => t('Autocomplete unit test'),
       'description' => t('Unit testing bibdk autocomplete'),
-      'group' => t('Bibliotek.dk - Autocomplete'),
+      'group' => t('bibliotek.dk'),
     );
   }
 
