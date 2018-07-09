@@ -37,7 +37,7 @@
     }
 
     var autocomplete_function = this.input.getAttribute('data-autocomplete-function');
-    
+
     // Prepare matches.
     var ul = $('<ul></ul>');
     var ac = this;
@@ -57,7 +57,7 @@
         .appendTo(ul);
     }
 
-    if (autocomplete_function == 'scan') {
+    if (autocomplete_function == 'scan' && matches.length > 0) {
       $('<li></li>')
         .html($('<div></div>').html('Next 10'))
         .click(function(){
