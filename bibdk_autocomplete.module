@@ -251,7 +251,6 @@ function bibdk_autocomplete_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_form_FORM_ID_alter() for form search_block_form and search_form.
  */
 function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, $form_id) {
-
   $vars = NULL;
 
   // check if this is https or not - we need it for the autocomplete javascript
@@ -304,8 +303,9 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
       }
     }
 
-    $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.js';
-    $form['#attached']['js'][] = drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.overrides.js';
+    // Ensure autocomplete alters never gets loaded before autocomplete JS.
+    $form['#attached']['js'][] = array(drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.js' => array('weight' => 10));
+    $form['#attached']['js'][] = array(drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.overrides.js' => array('weight' => 10));
 
   }
 
