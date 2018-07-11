@@ -304,9 +304,14 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
     }
 
     // Ensure autocomplete alters never gets loaded before autocomplete JS.
-    $form['#attached']['js'][] = array(drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.js' => array('weight' => 10));
-    $form['#attached']['js'][] = array(drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.overrides.js' => array('weight' => 10));
-
+    $form['#attached']['js'][] = array(
+      'data' => drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.js',
+      'weight' => 10
+    );
+    $form['#attached']['js'][] = array(
+      'data' => drupal_get_path('module', 'bibdk_autocomplete') . '/js/bibdk_autocomplete.overrides.js',
+      'weight' => 10,
+    );
   }
 
 }
