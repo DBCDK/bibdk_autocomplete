@@ -9,7 +9,7 @@
  */
 function bibdk_autocomplete_menu() {
 
-  $items['autocomplete/%/%'] = array(
+  $items['autocomplete/%/%/%'] = array(
     'title' => 'Custom search autocomplete',
     'description' => 'Autocomplete callback',
     'page callback' => 'bibdk_autocomplete_callback',
@@ -125,6 +125,9 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '') {
 
   try {
     $result = $client->do_request($action, $options['query']);
+    if (is_string($result)) {
+      $result = json_decode($result);
+    }
   }
   catch(Exception $e){
     drupal_json_output(array());
@@ -425,8 +428,7 @@ function bibdk_make_item_list($items) {
     '#theme' => 'item_list',
     '#type' => 'ul',
     '#attributes' => array(
-      'class' => array('links'),
-      'class' => array('bibdk-suggest-links'),
+      'class' => array('links', 'bibdk-suggest-links'),
     ),
     '#items' => $links,
   );
