@@ -125,13 +125,17 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '') {
 
   try {
     $result = $client->do_request($action, $options['query']);
-    if (is_string($result)) {
-      $result = json_decode($result);
-    }
   }
   catch(Exception $e){
     drupal_json_output(array());
     drupal_exit();
+  }
+
+  if (is_string($result)) {
+    $jsonResult = json_decode($result);
+    if ($jsonResult !== FALSE) {
+      $result = $jsonResult;
+    }
   }
 
   switch ($operation) {
