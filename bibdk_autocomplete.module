@@ -9,7 +9,7 @@
  */
 function bibdk_autocomplete_menu() {
 
-  $items['autocomplete/%/%/%'] = array(
+  $items['autocomplete/%/%'] = array(
     'title' => 'Custom search autocomplete',
     'description' => 'Autocomplete callback',
     'page callback' => 'bibdk_autocomplete_callback',
