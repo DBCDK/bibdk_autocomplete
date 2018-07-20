@@ -131,6 +131,13 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '') {
     drupal_exit();
   }
 
+  if (is_string($result)) {
+    $jsonResult = json_decode($result);
+    if ($jsonResult !== FALSE) {
+      $result = $jsonResult;
+    }
+  }
+
   switch ($operation) {
     case 'terms':
     case 'scan':
@@ -425,8 +432,7 @@ function bibdk_make_item_list($items) {
     '#theme' => 'item_list',
     '#type' => 'ul',
     '#attributes' => array(
-      'class' => array('links'),
-      'class' => array('bibdk-suggest-links'),
+      'class' => array('links', 'bibdk-suggest-links'),
     ),
     '#items' => $links,
   );
