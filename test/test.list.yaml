@@ -3,8 +3,6 @@
 
 simpletest :
 # DrupalUnitTestCase and DrupalWebTestCase
-- name : BibdkAutocompleteUnitTest
-  path : test/bibdk_autocomplete_unit_test.test
 - name : BibdkAutocompleteWebTestCase
   path : test/bibdk_autocomplete_web_test.test
 # - name : <test suite>

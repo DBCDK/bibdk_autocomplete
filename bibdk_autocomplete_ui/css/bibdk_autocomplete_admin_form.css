@@ -1,0 +1,25 @@
+#bibdk-autocomplete-ui-settings-form .form-type-radios {
+    padding: 0px;
+    float: left;
+}
+
+#bibdk-autocomplete-ui-settings-form .form-type-radio {
+    padding: 0.25rem 0.3125rem;
+    float: left;
+}
+
+#bibdk-autocomplete-ui-settings-form .form-type-textfield {
+    padding: 0 0.5625rem 0;
+    float: left;
+    width: 12rem;
+}
+
+#bibdk-autocomplete-ui-settings-form .form-type-checkbox {
+    padding: 1.125rem 0.5625rem 0;
+    float: left;
+    clear: left;
+}
+
+#bibdk-autocomplete-ui-settings-form .form-type-radios .description {
+    clear: both;
+}

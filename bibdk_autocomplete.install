@@ -16,9 +16,43 @@ function bibdk_autocomplete_install() {
 }
 
 /**
- * Enable module
+ * Implements hook_schema().
  */
-function bibdk_autocomplete_update_7001(&$sandbox) {
-  $module_list = array('bibdk_autocomplete');
-  module_enable($module_list);
+function bibdk_autocomplete_schema() {
+  $schema = array();
+  $schema['cache_bibdk_autocomplete'] = drupal_get_schema_unprocessed('system', 'cache');
+  return $schema;
+}
+
+/**
+ * Implements hook_update().
+ */
+function bibdk_autocomplete_update_7001(&$sandbox) {}
+
+/**
+ * Implements hook_update().
+ */
+function bibdk_autocomplete_update_7002(&$sandbox) {
+  if (!db_table_exists('cache_bibdk_autocomplete_ortograf')) {
+    db_create_table('cache_bibdk_autocomplete_ortograf', drupal_get_schema_unprocessed('system', 'cache'));
+  }
+}
+
+/**
+ * Update cache table naming, to make it consistant
+ */
+function bibdk_autocomplete_update_7003(&$sandbox) {
+  if (!db_table_exists('cache_bibdk_autocomplete')) {
+    db_create_table('cache_bibdk_autocomplete', drupal_get_schema_unprocessed('system', 'cache'));
+  }
+  if (db_table_exists('cache_bibdk_autocomplete_ortograf')) {
+    db_drop_table('cache_bibdk_autocomplete_ortograf');
+  }
+}
+
+/**
+ * Enable UI module by default.
+ */
+function bibdk_autocomplete_update_7004(&$sandbox) {
+  module_enable(array('bibdk_autocomplete_ui'));
 }

@@ -2,13 +2,6 @@
   /**
    * Scroll input field to top to make room for autocomplete suggestions
    */
-/*
-  if (Modernizr.touch){
-    $(document).on('focus', 'input[autocomplete]', function(){
-      document.body.scrollTop = $(this).offset().top - 20;
-    });
-  }
-*/
 
   /**
    * overrides for drupal autocomplete w/o ajax

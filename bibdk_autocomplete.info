@@ -1,10 +1,6 @@
 name = Bibliotek.dk - Autocomplete
-description = Select and configure search form elements for use with open_autocomplete
+description = Select and configure search form elements for use with Ortograf suggestions.
 core = 7.x
 package = Bibliotek.dk
 
 files[] = test/bibdk_autocomplete_web_test.test
-files[] = test/bibdk_autocomplete_unit_test.test
-files[] = bibdk_autocomplete.request.inc
-
-dependencies[] = bibdk_custom_search
