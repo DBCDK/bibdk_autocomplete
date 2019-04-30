@@ -138,6 +138,7 @@ function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '') {
   switch ($operation) {
     case 'suggest':
       $options['requestParameters'] = bibdk_autocomplete_set_suggest_options($options);
+      $action = 'openPlatformSuggest';
       break;
     case 'terms':
     case 'scan':
