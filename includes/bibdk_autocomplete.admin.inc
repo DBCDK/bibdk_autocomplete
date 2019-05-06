@@ -191,6 +191,7 @@ function bibdk_autocomplete_admin() {
         'facets' => t('Facets', array(), array('context' => 'bibdk_autocomplete_admin')),
         'facetSpell' => t('FacetSpell', array(), array('context' => 'bibdk_autocomplete_admin')),
         'scan' => t('Scan', array(), array('context' => 'bibdk_autocomplete_admin')),
+        'suggest'=> t('Suggest', array(), array('context' => 'bibdk_autocomplete_admin'))
       ),
       '#default_value' => (!empty($default_value['operation'])) ? $default_value['operation'] : '',
       '#attributes' => array('class'=>array('bibdk-autocomplete-admin-operation')),
