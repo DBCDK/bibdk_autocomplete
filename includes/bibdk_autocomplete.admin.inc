@@ -22,81 +22,6 @@ function bibdk_autocomplete_admin() {
     $default_settings[$key] = (isset($defaults[$key])) ? $defaults[$key] : $base_setting;
   }
 
-  $form['bibdk_autocomplete_webservice'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Bibliotek.dk autocomplete URL', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#tree' => FALSE,
-    '#collapsible' => TRUE,
-  );
-
-  $form['bibdk_autocomplete_webservice']['bibdk_autocomplete_rest_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('bibliotek.dk autocomplete REST URL', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#size' => 73,
-    '#description' => t('Autocomplete REST URL (Redo as a standard webservice client once we have a SOAP webservice.)', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#default_value' => variable_get('bibdk_autocomplete_rest_url', NULL),
-  );
-
-  $form['bibdk_autocomplete_settings'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Bibliotek.dk autocomplete settings', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#tree' => TRUE,
-    '#collapsible' => TRUE,
-  );
-
-  $form['bibdk_autocomplete_settings']['agency'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Agency', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#size' => 26,
-    '#description' => t('Only get suggestions from data accessible to the specified agency', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#default_value' => $default_settings['agency'],
-  );
-
-  $form['bibdk_autocomplete_settings']['maxSuggestions'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Max suggestions', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#size' => 26,
-    '#description' => t('Maximum suggestions to return', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#default_value' => $default_settings['maxSuggestions'],
-  );
-
-  $form['bibdk_autocomplete_settings']['maxTime'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Max request time', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#size' => 26,
-    '#description' => t('Maximum request time in milliseconds.', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#default_value' => $default_settings['maxTime'],
-  );
-
-  $form['bibdk_autocomplete_settings']['profile'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Profile', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#size' => 26,
-    '#description' => t('Only get suggestions from data accessible to the specified search profile', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#default_value' => $default_settings['profile'],
-  );
-
-  $form['bibdk_autocomplete_settings']['highlight'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Highlight', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#description' => t('If checked, search prefix will be enclosed in highlight prefix and -suffix', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#default_value' => $default_settings['highlight'],
-  );
-
-  $form['bibdk_autocomplete_settings']['highlight.pre'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Highlight prefix', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#size' => 20,
-    '#default_value' => $default_settings['highlight.pre'],
-  );
-
-  $form['bibdk_autocomplete_settings']['highlight.post'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Highlight suffix', array(), array('context' => 'bibdk_autocomplete_admin')),
-    '#size' => 18,
-    '#default_value' => $default_settings['highlight.post'],
-  );
-
   // Attach the CSS to the form
   $path = drupal_get_path('module', 'bibdk_autocomplete');
   $form['#attached'] = array(
@@ -114,11 +39,6 @@ function bibdk_autocomplete_admin() {
     '#type' => 'fieldset',
     '#title' => t('Bibliotek.dk autocomplete fields', array(), array('context' => 'bibdk_autocomplete_admin')),
     '#tree' => TRUE,
-  );
-
-  $form['bibdk_autocomplete_var']['description'] = array(
-    '#type' => 'item',
-    '#markup' => t('Term index: Get terms starting with a prefix from a specific index', array(), array('context' => 'bibdk_autocomplete_admin')) . '<br/>' . t('Facet index: Get phrases containing words starting with a prefix from a specific index', array(), array('context' => 'bibdk_autocomplete_admin')) . '<br/>' . t('Query filter: Limit results to a search register', array(), array('context' => 'bibdk_autocomplete_admin')),
   );
 
   $base_vars['autocomplete'] = NULL;
@@ -152,56 +72,27 @@ function bibdk_autocomplete_admin() {
     );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['index'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Term index', array(), array('context' => 'bibdk_autocomplete_admin')),
-      '#size' => 25,
-      '#default_value' => (!empty($default_value['index'])) ? $default_value['index'] : '',
+      '#type' => 'select',
+      '#options' => array(
+        'creator'=> 'creator',
+        'title' => 'title',
+        'subject' => 'subejct'
+      ),
+      '#title' => t('Type', array(), array('context' => 'bibdk_autocomplete_admin')),
+
+      '#default_value' => isset($default_value['index']) ? $default_value['index'] : 'creator',
       '#attributes' => array('class'=>array('bibdk-autocomplete-admin-index')),
     );
 
-    $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['facetIndex'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Facet Index', array(), array('context' => 'bibdk_autocomplete_admin')),
-      '#size' => 25,
-      '#default_value' => (!empty($default_value['facetIndex'])) ? $default_value['facetIndex'] : '',
-      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-facetIndex')),
-    );
-
-    $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['filterQuery'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Filter Query', array(), array('context' => 'bibdk_autocomplete_admin')),
-      '#size' => 25,
-      '#default_value' => (!empty($default_value['filterQuery'])) ? $default_value['filterQuery'] : '',
-      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-filterQuery')),
-    );
-
-    $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['sort'] = array(
-      '#type' => 'radios',
-      '#title' => t('Output sort order', array(), array('context' => 'bibdk_autocomplete_admin')),
-      '#options' => array('count' => 'count', 'index' => 'index',),
-      '#default_value' => (!empty($default_value['sort'])) ? $default_value['sort'] : '',
-      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-sort')),
-    );
 
     $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['operation'] = array(
       '#type' => 'select',
       '#title' => t('Function', array(), array('context' => 'bibdk_autocomplete_admin')),
       '#options' => array(
-        'terms' => t('Terms', array(), array('context' => 'bibdk_autocomplete_admin')),
-        'facets' => t('Facets', array(), array('context' => 'bibdk_autocomplete_admin')),
-        'facetSpell' => t('FacetSpell', array(), array('context' => 'bibdk_autocomplete_admin')),
-        'scan' => t('Scan', array(), array('context' => 'bibdk_autocomplete_admin')),
         'suggest'=> t('Suggest', array(), array('context' => 'bibdk_autocomplete_admin'))
       ),
       '#default_value' => (!empty($default_value['operation'])) ? $default_value['operation'] : '',
       '#attributes' => array('class'=>array('bibdk-autocomplete-admin-operation')),
-    );
-
-    $form['bibdk_autocomplete_var'][$value->p_uuid]['vars'][$value->v_uuid]['aggregate'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Aggregate filter queries', array(), array('context' => 'bibdk_autocomplete_admin')),
-      '#default_value' => (!empty($default_value['aggregate'])) ? $default_value['aggregate'] : FALSE,
-      '#attributes' => array('class'=>array('bibdk-autocomplete-admin-aggregate')),
     );
 
     // see also drupal_html_id
@@ -233,9 +124,6 @@ function bibdk_autocomplete_admin() {
  * Validation handler for bibdk_autocomplete_admin
  */
 function bibdk_autocomplete_admin_validate($form, &$form_state) {
-
-  $form_state['values']['bibdk_autocomplete_rest_url'] = trim($form_state['values']['bibdk_autocomplete_rest_url'], $character_mask = " \t\n\r\0\x0B/");
-
   foreach ($form_state['values']['bibdk_autocomplete_var'] as $p_uuid => $page) {
     foreach ($page['vars'] as $v_uuid => $vars) {
       if ($vars['autocomplete'] && empty($vars['index'])) {
