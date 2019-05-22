@@ -19,7 +19,7 @@ function bibdk_autocomplete_form_ting_client_admin_webservices_settings_alter(&$
 
   $form['openplatform_suggest']['OpenPlatformSuggestRequest_url'] = array(
     '#type' => 'textfield',
-    '#title' => t('openplatform suggest url'),
+    '#title' => t('openplatform suggest url', array(), array('context' => 'bibdk_autocomplete_admin')),
     '#description' => t('URL to suggest service', array(), array('context' => 'bibdk_autocomplete_admin')),
     '#required' => TRUE,
     '#default_value' => variable_get('OpenPlatformSuggestRequest_url', ''),
