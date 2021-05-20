@@ -37,18 +37,6 @@ function bibdk_autocomplete_menu() {
 }
 
 /**
- * Implements hook_ting_client_webservice (@see ting_client.module)
- * */
-function bibdk_autocomplete_ting_client_webservice() {
-  $ret = array();
-  $ret['openSuggestionTerm']['class'] = 'openSuggestionTerm';
-  $ret['openSuggestionTerm']['url'] = 'openSuggestionTerm_url';
-  $ret['openSuggestionFacetspell']['class'] = 'openSuggestionFacetspell';
-  $ret['openSuggestionFacetspell']['url'] = 'openSuggestionFacetspell_url';
-  return $ret;
-}
-
-/**
  * Callback function used when input is entered in a search field.
  *
  * @param      $p_uuid
