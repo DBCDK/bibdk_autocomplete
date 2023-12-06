@@ -48,6 +48,14 @@ function bibdk_autocomplete_menu() {
 function bibdk_autocomplete_callback($p_uuid, $v_uuid, $string = '') {
   $items = array();
 
+  global $user;
+  $now = time();
+  $an_hour_gone_since_activity = ($now - $user->access) > HOUR_IN_SECONDS;
+  if ($an_hour_gone_since_activity) {
+    drupal_json_output(array("error" => "logout"));
+    drupal_exit();
+  }
+
   if (strlen($string) < 3) {
     drupal_json_output($items);
     drupal_exit();
@@ -140,7 +148,7 @@ function bibdk_autocomplete_set_suggest_options($options) {
   );
 
   $term_index = $options['query']['index'];
-  $type = isset($phrase_convert[$term_index]) ? $phrase_convert[$term_index] : $term_index;
+  $type = $phrase_convert[$term_index] ?? $term_index;
 
   $q = $options['query']['query'];
 
@@ -228,7 +236,7 @@ function _bibdk_autocomplete_form_search_block_form_alter(&$form, &$form_state, 
   // @see js/bibdk_autocomplete.js
   // if page is behind a proxy
   if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-    $https = ($_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https');
+    $https = ($_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
   }
   else {
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
@@ -351,9 +359,7 @@ function bibdk_autocomplete_0_hit_search($conditions) {
       $items[bibdk_autocomplete_truncate(html_entity_decode(strip_tags($suggestion->phrase)), 64)] = $suggestion->phrase;
     }
   }
-  $link_items = bibdk_make_item_list($items);
-
-  return $link_items;
+  return bibdk_make_item_list($items);
 }
 
 /**

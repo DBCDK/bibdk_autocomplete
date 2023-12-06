@@ -48,10 +48,11 @@
    *  copied from misc/autocomplete.js
    */
   Drupal.jsAC.prototype.populatePopup = function () {
-    if (!this.input.value.length || this.input.value.length < 3){
+    if (!this.input.value.length || this.input.value.length < 3) {
       return false;
     }
     var $input = $(this.input);
+
     // If no value in the textfield, do not show the popup.
     var position = $input.position();
     // Show popup.
