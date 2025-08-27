@@ -128,7 +128,7 @@ function bibdk_autocomplete_set_suggest_options($options) {
  * @param $options
  */
 function bibdk_autocomplete_callback_error($action, $options) {
-  watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . ': ' . $action . ' : ' . http_build_query($options['query']), array(), WATCHDOG_WARNING);
+  watchdog('bibdk_autocomplete', 'Autocomplete return empty set for ' . ': ' . $action . ' : ' . http_build_query(is_string($options['query']) ? [] : $options['query']), array(), WATCHDOG_WARNING);
   drupal_json_output(array());
   drupal_exit();
 }
